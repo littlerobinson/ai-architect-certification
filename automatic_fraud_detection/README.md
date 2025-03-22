@@ -54,6 +54,8 @@ Create connections :
 
 ```
 aws_default
+postgres_default
+slack_default
 ```
 
 ```markdown
@@ -66,3 +68,13 @@ Password: xxx
 Port: 5432
 Extra: {"sslmode": "require"}
 ```
+
+### Slack
+
+Manage access via : https://api.slack.com/apps/
+
+Create APP, access token and permissions.
+
+![alt text](slack1.png)
+
+Help --> https://help.thebotplatform.com/en/articles/7233667-how-to-create-a-slack-bot

@@ -80,10 +80,10 @@ if __name__ == "__main__":
                 INSERT INTO payment_predictions (
                     cc_num, merchant, category, amount, first_name, last_name, gender,
                     street, city, state, zip, lat, long, city_pop, job, dob,
-                    trans_num, merch_lat, merch_long, "cur_time"
+                    trans_num, merch_lat, merch_long, "cur_time", "is_fraud"
                 ) VALUES (
                     %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s
+                    %s, %s, %s, %s, %s, %s
                 )
                 """,
                 (
@@ -107,6 +107,7 @@ if __name__ == "__main__":
                     merch_lat,
                     merch_long,
                     cur_time,
+                    is_fraud,
                 ),
             )
             conn.commit()

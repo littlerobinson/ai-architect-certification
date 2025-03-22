@@ -1,4 +1,5 @@
 import os
+import logging
 import mlflow
 import pandas as pd
 from airflow import DAG
@@ -7,6 +8,7 @@ from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.utils.dates import days_ago
+from airflow.providers.slack.operators.slack import SlackAPIPostOperator
 
 # Airflow variables
 MLFLOW_TRACKING_URI = Variable.get("MLFLOW_TRACKING_URI")
@@ -52,7 +54,7 @@ def make_and_update_predictions(ti):
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
     # Load model
-    model_uri = "runs:/5cf128eca2714645be3cbafe45d66d69/fraud_detection_model"
+    model_uri = "runs:/3d71f168375c4e76a966d0bac91e36fe/fraud_detection_model"
     model = mlflow.pyfunc.load_model(model_uri)
 
     # Load data from XCom
@@ -68,7 +70,7 @@ def make_and_update_predictions(ti):
     df["state"] = df["state"].astype("str")
     df["job"] = df["job"].astype("str")
 
-    df["fraud_predict"] = df["fraud_predict"].fillna(0)  # Example: replace NaN with 0
+    df["fraud_predict"] = df["fraud_predict"].fillna(0)
 
     if "is_fraud_from_api" in df.columns:
         df["is_fraud_from_api"] = df["is_fraud_from_api"].fillna(False)
@@ -77,6 +79,9 @@ def make_and_update_predictions(ti):
 
     # Make predictions
     df["predict"] = model.predict(df)
+    ti.xcom_push(key="predict_data", value=df.to_json())
+
+    logging.info(f"xcom push predict data {df.to_json()}")
 
     # Update the database
     postgres_hook = PostgresHook(postgres_conn_id="postgres_default")
@@ -91,6 +96,24 @@ def make_and_update_predictions(ti):
             cursor.execute(update_query, (row["predict"], row["cc_num"]))
     conn.commit()
     conn.close()
+
+
+def check_and_notify_fraud(ti):
+    data_json = ti.xcom_pull(task_ids="make_and_update_predictions", key="predict_data")
+    logging.info(f"xcom pull predict data {data_json}")
+    df = pd.read_json(data_json)
+
+    # Filter on predict data
+    fraud_cases = df[df["predict"] == 1]
+
+    if not fraud_cases.empty:
+        message = (
+            f":rotating_light: FRAUD DETECT ! {len(fraud_cases)} suspects transactions."
+        )
+        ti.xcom_push(key="slack_message", value=message)
+    else:
+        message = ":rotating_light: NO FRAUD DETECTED."
+        ti.xcom_push(key="slack_message", value=message)
 
 
 # Task to load the data
@@ -109,5 +132,20 @@ predict_and_update_task = PythonOperator(
     dag=dag,
 )
 
+check_fraud_task = PythonOperator(
+    task_id="check_fraud",
+    python_callable=check_and_notify_fraud,
+    provide_context=True,
+    dag=dag,
+)
+
+slack_alert_task = SlackAPIPostOperator(
+    task_id="send_slack_alert",
+    slack_conn_id="slack_default",  # Utiliser la connexion Slack définie précédemment
+    text="{{ ti.xcom_pull(task_ids='check_fraud', key='slack_message') }}",
+    channel="#airflow",
+    dag=dag,
+)
+
 # Define the task order
-load_data_task >> predict_and_update_task
+load_data_task >> predict_and_update_task >> check_fraud_task >> slack_alert_task

@@ -2,6 +2,7 @@
 *.cfg
 automatic_fraud_detection/airflow/secrets/*.json
 automatic_fraud_detection/airflow/secrets/*.pem
+airflow/logs/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

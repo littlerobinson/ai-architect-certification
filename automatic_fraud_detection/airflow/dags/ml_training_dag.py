@@ -33,7 +33,6 @@ INSTANCE_TYPE = Variable.get("INSTANCE_TYPE")
 MLFLOW_TRACKING_URI = Variable.get("MLFLOW_TRACKING_URI")
 MLFLOW_EXPERIMENT_ID = Variable.get("MLFLOW_EXPERIMENT_ID")
 MLFLOW_LOGGED_MODEL = Variable.get("MLFLOW_LOGGED_MODEL")
-SLACK_TOKEN = Variable.get("SLACK_TOKEN")
 
 # Airflow connexions
 aws_conn = BaseHook.get_connection("aws_default")
@@ -59,19 +58,11 @@ DB_HOST = postgres_conn.host
 DB_PORT = postgres_conn.port
 DB_NAME = postgres_conn.schema
 
-# Email
-EMAIL_NOTIFICATION = Variable.get("EMAIL_NOTIFICATION")
-
-# Slack configuration
-slack_token = SLACK_TOKEN
-slack_channel = "#airflow"
-slack_url = "https://slack.com/api/chat.postMessage"
-
 
 def failure_slack_alert(context):
-    slack_webhook = SlackWebhookHook(webhook_token=slack_token)
-    message = f":x: Task {context['task_instance_key_str']} fail !"
-    slack_webhook.send_text(message)
+    slack_webhook = SlackWebhookHook(slack_conn_id="slack_default")
+    message = f":x: Task {context['task_instance_key_str']} failed!"
+    slack_webhook.send_text(message, channel="#airflow")
 
 
 def _check_payments_table_data():
