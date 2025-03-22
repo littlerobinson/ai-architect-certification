@@ -112,7 +112,7 @@ def check_and_notify_fraud(ti):
         )
         ti.xcom_push(key="slack_message", value=message)
     else:
-        message = ":rotating_light: NO FRAUD DETECTED."
+        message = ":tada: NO FRAUD DETECTED."
         ti.xcom_push(key="slack_message", value=message)
 
 
