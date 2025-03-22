@@ -1,0 +1,15 @@
+#!/bin/bash
+# export $(cat .env | xargs)
+docker run -e DB_USER=$DB_USER \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e DB_HOST=$DB_HOST \
+            -e DB_PORT=$DB_PORT \
+            -e DB_NAME=$DB_NAME \
+            -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+            -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+            -e MLFLOW_EXPERIMENT_NAME="automatic-fraud-detection" \
+            -e MLFLOW_EXPERIMENT_ID=4 \
+            -e MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI \
+            -e MLFLOW_LOGGED_MODEL=$MLFLOW_LOGGED_MODEL \
+            -v $(pwd):/home \
+            automatic-fraud-detection-training

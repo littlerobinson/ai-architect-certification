@@ -1,0 +1,30 @@
+Haute disponibilite
+
+Evolutif
+
+Volume élevé
+
+Rapide
+
+Detection de fraude en temps reel
+
+Latence minimale
+
+ACID
+
+Partition
+
+Envs distribués
+
+synchronisation des données en temps réel
+
+reprise après sinistre
+
+
+Securite et conformite --> chiffrement utilisation des rôles
+
+Focus on normalized schemas, transactional integrity, and performance optimization.
+
+ACID:
+En informatique, les propriétés ACID (atomicité, cohérence, isolation et durabilité) sont un ensemble de propriétés qui garantissent qu'une transaction informatique est exécutée de façon fiable.
+

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+docker run -it -p 8080:8080\
+ -v "$(pwd):/mlflow"\
+ -e PORT=8080\
+ -e MLFLOW_TRACKING_URI="https://xxx"\
+ -e AWS_ACCESS_KEY_ID="xxx"\
+ -e AWS_SECRET_ACCESS_KEY="xxx"\
+ -e MLFLOW_LOGGED_MODEL="s3://xxx"\
+ -e BACKEND_STORE_URI="postgresql://xxx"\
+ getaround-mlflow-jedha python training/app.py

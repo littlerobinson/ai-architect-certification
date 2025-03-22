@@ -1,0 +1,21 @@
+Stripe gères les paiement et opérations financères des entreprises
+
+entreprise
+
+transaction
+paiements
+remboursements
+rétrofacturations
+gestion des abonnements
+
+Transaction ID
+Merchant ID
+Customer ID
+Transaction Amount
+Currency
+Payment Method
+Transaction Date and Time
+Location (IP-based geolocation)
+Device Type (mobile, desktop, etc.)
+Status (successful, failed, refunded)
+Fraud Indicators (e.g., anomaly scores)

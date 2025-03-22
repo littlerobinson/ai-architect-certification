@@ -1,0 +1,11 @@
+[email]
+email_backend = airflow.utils.email.send_email_smtp
+
+[smtp]
+smtp_host = smtp.gmail.com
+smtp_starttls = True
+smtp_ssl = False
+smtp_user = votre_email@gmail.com
+smtp_password = votre_mot_de_passe
+smtp_port = 587
+smtp_mail_from = votre_email@gmail.com
