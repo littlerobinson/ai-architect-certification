@@ -1,33 +1,41 @@
-# Automatic Fraud Detection
+# 🚀 Automatic Fraud Detection
 
-## Infos
+## 📌 Overview
 
-Payement API documentation
+Automatic Fraud Detection is a machine learning-based system designed to identify fraudulent transactions in real-time. The system integrates with a payment API and leverages Kafka, PostgreSQL, Airflow, and AWS EC2 for efficient data processing and automation.
 
-## Installation
+---
 
-### Traing model :
+## 🛠 Installation
+
+### 📌 Model Training
+
+To train the fraud detection model, follow these steps:
 
 ```bash
-cd mlflow docker build -t automatic-fraud-detection-mlflow .
+cd mlflow
+docker build -t automatic-fraud-detection-mlflow .
 cd ..
 ./run.sh
 ```
 
-### Consume payments data :
+### 📊 Consuming Payment Data
 
-- Create the database on your postgresdb automatic-fraud-detection.
-
-- Launch the container docker for kafka service.
+1. **Create the database**: Ensure you have a PostgreSQL database named `automatic-fraud-detection`.
+2. **Launch Kafka service**:
 
 ```bash
 cd kafka
 docker compose up -d
-# 2 container will appear, if just one appear perhaps it's an old volume the problem, do :
+```
+
+⚠️ If only one container appears instead of two, try the following command to remove old volumes:
+
+```bash
 docker compose down -v
 ```
 
-- Launch kafka producer & consumer :
+3. **Start Kafka producer & consumer**:
 
 ```bash
 cd kafka
@@ -35,12 +43,19 @@ python app/producer.py
 python app/consumer.py
 ```
 
-### EC2
+---
 
-Create an EC2 instance with all packages for training and save it as instant.
-Create a key pair to connect to EC2 and save it in the secret folder inside Airflow.
+## ☁️ Deploying on AWS EC2
 
-### Airflow
+1. **Create an EC2 instance** and install all required packages for training.
+2. **Save the instance** as an Amazon Machine Image (AMI).
+3. **Generate an SSH key pair** and store it in the `secrets` folder inside Airflow.
+
+---
+
+## ♻️ Airflow Setup
+
+1. **Initialize and start Airflow**:
 
 ```bash
 cd airflow
@@ -48,33 +63,30 @@ docker compose up airflow-init
 docker compose up -d
 ```
 
-Import variables from json file in secrets folder.
+2. **Import variables** from a JSON file located in the `secrets` folder.
+3. **Create the following Airflow connections**:
 
-Create connections :
+| Connection ID      | Type     | Host         | Database                    | Login | Password | Port | Extra                      |
+| ------------------ | -------- | ------------ | --------------------------- | ----- | -------- | ---- | -------------------------- |
+| `aws_default`      | AWS      | N/A          | N/A                         | N/A   | N/A      | N/A  | N/A                        |
+| `postgres_default` | Postgres | ep-small-xxx | `automatic-fraud-detection` | `xxx` | `xxx`    | 5432 | `{ "sslmode": "require" }` |
+| `slack_default`    | Slack    | N/A          | N/A                         | N/A   | N/A      | N/A  | N/A                        |
 
-```
-aws_default
-postgres_default
-slack_default
-```
+---
 
-```markdown
-Connection Id: postgres_default
-Connection Type: Postgres
-Host: ep-small-xxx
-Database: automatic-fraud-detection
-Login: xxx
-Password: xxx
-Port: 5432
-Extra: {"sslmode": "require"}
-```
+## 💬 Slack Integration
 
-### Slack
+1. Manage access via the [Slack API](https://api.slack.com/apps/).
+2. **Create a Slack App**, generate an access token, and set permissions.
 
-Manage access via : https://api.slack.com/apps/
+📖 **Help guide**: [How to create a Slack bot](https://help.thebotplatform.com/en/articles/7233667-how-to-create-a-slack-bot)
 
-Create APP, access token and permissions.
+![Slack Integration](slack1.png)
 
-![alt text](slack1.png)
+---
 
-Help --> https://help.thebotplatform.com/en/articles/7233667-how-to-create-a-slack-bot
+## 🎯 Next Steps
+
+- Add dashboard to manage frauds
+
+🚀 **Happy Coding!**
